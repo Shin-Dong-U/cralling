@@ -10,10 +10,14 @@ import java.io.IOException;
 public class FileCopy {
 	private static int sequence = 0;
 	
-	public void copy(String address, String imageName) throws IOException{
-		File original = new File(address, imageName);
+	public void copy(String address, String name) {
 		
-		String copyFileName = "copy_" + ++sequence + imageName;
+	}
+	
+	public void fileCopy(String address, String fileName) throws IOException{
+		File original = new File(address, fileName);
+		
+		String copyFileName = "copy_" + ++sequence + fileName;
 		File copyFile = new File(address, copyFileName);
 		
 		FileInputStream in = new FileInputStream(original);
@@ -33,4 +37,6 @@ public class FileCopy {
 		bis.close();
 		in.close();
 	}
+	
+	
 }
