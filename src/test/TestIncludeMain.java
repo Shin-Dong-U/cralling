@@ -17,6 +17,6 @@ public class TestIncludeMain {
 //		String[] test = copy.splitFileAddrAndFileName("C:\\Users\\goott3\\eclipse-workspace\\crawlling\\images\\lion.jpg");
 //		System.out.println(Arrays.toString(test));
 		
-		copy.copyStart("C:\\Users\\goott3\\Desktop\\source");
+		copy.copyStart("C:\\Users\\sdw\\Desktop\\movies\\영화\\Margin.Call.LIMITED.1080p.Bluray.x264-TWiZTED");
 	}
 }
