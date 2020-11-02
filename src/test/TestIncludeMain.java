@@ -1,11 +1,12 @@
 package test;
 
 import java.io.IOException;
+import java.util.Arrays;
 
-import study.*;
+import study.FileCopy;
 
 public class TestIncludeMain {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		FileCopy copy = new FileCopy();
 //		try {
 //			copy.fileCopy("C:\\Users\\goott3\\eclipse-workspace\\crawlling\\images","lion.jpg");
@@ -13,7 +14,9 @@ public class TestIncludeMain {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+//		String[] test = copy.splitFileAddrAndFileName("C:\\Users\\goott3\\eclipse-workspace\\crawlling\\images\\lion.jpg");
+//		System.out.println(Arrays.toString(test));
 		
-		
+		copy.copyStart("C:\\Users\\goott3\\Desktop\\source");
 	}
 }
