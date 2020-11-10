@@ -25,11 +25,12 @@ public class WebtoonCrawlling {
 	
 	public String titleId = "";//웹툰 key값
 	public String no = "";//웹툰의 회차정보 1회는 no1
+	public String lastNo = "";
 	
 	public static void main(String[] args) throws IOException {
 		WebtoonCrawlling crawlling = new WebtoonCrawlling();
 		crawlling.titleId = crawlling.getTitleId("호랑이형님");
-		System.out.println(crawlling.titleId);
+		crawlling.getLastNo(crawlling.listStr + crawlling.titleId);
 	}
 	
 	public void start(String webToonName) {
@@ -43,5 +44,13 @@ public class WebtoonCrawlling {
 		String href = doc.select(".resultList > li > h5 > a").attr("href");
 		href = href.substring( href.indexOf("titleId=") + 8);
 		return href;
+	}
+	
+	//해당 웹툰의 마지막 화 회차 리턴.
+	public String getLastNo(String url) throws IOException {
+		Document doc = Jsoup.connect(url).get();
+		String href = doc.select(".viewList > tbody > tr:nth-child(2) > td > a").attr("href");
+		String lastNo = href.substring( href.indexOf("no=") + 3, href.lastIndexOf("&"));
+		return lastNo;
 	}
 }
