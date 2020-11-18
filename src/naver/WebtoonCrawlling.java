@@ -1,9 +1,12 @@
 package naver;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -84,21 +87,42 @@ public class WebtoonCrawlling {
 	}
 	
 	public boolean downloadImage(String src) {
+		BufferedInputStream bis = null;
+		BufferedOutputStream bos = null;
+		
 		try {
 			url = new URL(src);
-			InputStream is = url.openStream();
-			BufferedInputStream bis = new BufferedInputStream(is);
+			bis = new BufferedInputStream(url.openStream());
 			
-			String folderName = this.folderName + "\\images\\" + no;   
+			String folderName = this.folderName + "\\images\\" + no;
+			makeFolder(folderName);
+			
 			String fileName = src.substring( src.lastIndexOf('/') + 1);
 			
-//			File f = new File();
+			File f = new File(folderName + "\\" + fileName);
 			
+			bos = new BufferedOutputStream(new FileOutputStream(f));
+			
+			byte[] bufferData = new byte[1024];
+			
+			while(bis.read(bufferData, 0, bufferData.length) != -1) {
+				bos.write(bufferData);
+			}
+			
+			bos.flush();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally {
+			try {
+				if(bis != null) bis.close();
+				if(bos != null) bos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		
 		return true;
 	}
 	
