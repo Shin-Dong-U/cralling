@@ -4,11 +4,12 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,11 +40,13 @@ public class WebtoonCrawlling {
 		WebtoonCrawlling crawlling = new WebtoonCrawlling();
 		
 		crawlling.title = "호랑이형님";
-		crawlling.folderName = "c:\\dev\\sample\\" + crawlling.title + "\\";
+		crawlling.folderName = "C:\\Users\\goott3\\Desktop\\sample\\" + crawlling.title;
 		crawlling.titleId = crawlling.getTitleId(crawlling.title);
-		crawlling.getLastNo(crawlling.listStr + crawlling.titleId);
+		crawlling.lastNo = crawlling.getLastNo(crawlling.listStr + crawlling.titleId);
 		
-		crawlling.webtoonDownload("1");
+		for(int i = 1; i <= Integer.parseInt(crawlling.lastNo); i++ ) {
+			crawlling.webtoonDownload(i + "");
+		}
 	}
 	
 	public void start(String webToonName) {
@@ -70,29 +73,51 @@ public class WebtoonCrawlling {
 	}
 	
 	public boolean webtoonDownload(String no) throws IOException {
-		String url = this.detailStr + "titleId=" + this.titleId + "&no=" + no;
-		Document doc = Jsoup.connect(url).get();
-		Elements elements = doc.select(".wt_viewer img");
-		int size = elements.size();
+		String addr = this.detailStr + "titleId=" + this.titleId + "&no=" + no;
+		Document doc = Jsoup.connect(addr).get();
+  		Elements elements = doc.select(".wt_viewer img");
+  		int size = elements.size();
 		
-		for(int i = 0; i < size; i++) {
+//  	String html = doc.select(".wt_viewer img").outerHtml();
+  		String html = "<html><header><style>.wt_viewer{min-width:960px;padding:50px 0;text-align:center;font-size:0;line-height:0}.wt_viewer img{display:block;margin:0 auto}.wt_viewer ~ .pre_view{display:block;width:270px;height:51px;margin:30px auto 0;border:1px solid #b8b8b8;text-align:center}.wt_viewer ~ .pre_view span{display:inline-block;width:155px;height:22px;margin-top:15px;background-position:0 -730px}.wt_viewer ~ .pre_view.end span{width:172px;background-position:0 -760px}</style></header><body><div class='wt_viewer'>";
+  		StringBuffer sb = new StringBuffer();
+  		for(int i = 0; i < size; i++) {
 			// 1. 폴더 생성 후 이미지 파일 다운로드,
 			// 2. src string 변경.(상대경로로)
 			// 3. html 생성. 
 			String src = elements.eq(i).attr("src");
 			
+			downloadImage(addr, src, no);
+			
+			
+			String folderName = "./images/" + no + "/";
+			String fileName = src.substring( src.lastIndexOf('/') + 1);
+			sb.append("<img src='");
+			sb.append(folderName + fileName);
+			sb.append("'/></br>\n");
+//			html.replaceFirst(src, folderName + fileName);
 		}
-		
+		html += sb.toString();
+		html += "</div></body></html>";
+  		File f = new File("C:\\Users\\goott3\\Desktop\\sample\\호랑이형님\\" + no + ".html");
+  		FileWriter fw = new FileWriter(f);
+  		fw.write(html);
+  		fw.flush();
+  		fw.close();
 		return false;
 	}
 	
-	public boolean downloadImage(String src) {
+	public boolean downloadImage(String addr, String src, String no) {
 		BufferedInputStream bis = null;
 		BufferedOutputStream bos = null;
 		
 		try {
 			url = new URL(src);
-			bis = new BufferedInputStream(url.openStream());
+			HttpsURLConnection  con = (HttpsURLConnection)url.openConnection();
+			
+			con.setRequestProperty("Referer", addr); 
+						
+			bis = new BufferedInputStream(con.getInputStream());
 			
 			String folderName = this.folderName + "\\images\\" + no;
 			makeFolder(folderName);
@@ -100,15 +125,18 @@ public class WebtoonCrawlling {
 			String fileName = src.substring( src.lastIndexOf('/') + 1);
 			
 			File f = new File(folderName + "\\" + fileName);
-			
+			 
 			bos = new BufferedOutputStream(new FileOutputStream(f));
 			
-			byte[] bufferData = new byte[1024];
-			
-			while(bis.read(bufferData, 0, bufferData.length) != -1) {
-				bos.write(bufferData);
+//			byte[] bufferData = new byte[1024];
+//			while(bis.read(bufferData, 0, bufferData.length) != -1) {
+//				bos.write(bufferData);
+//			}
+			int data = 0;
+			while((data = bis.read()) != -1) {
+				bos.write(data);
 			}
-			
+				
 			bos.flush();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
