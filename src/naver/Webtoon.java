@@ -109,15 +109,21 @@ public class Webtoon {
 	 * @throws IOException
 	 */
 	private boolean makeHtmlFile(String bufferString, String no) throws IOException {
-		String html = "<html>\n<header>\n";
-		html += "<style>\n.wt_viewer{min-width:960px;padding:50px 0;text-align:center;font-size:0;line-height:0}.wt_viewer img{display:block;margin:0 auto}.wt_viewer ~ .pre_view{display:block;width:270px;height:51px;margin:30px auto 0;border:1px solid #b8b8b8;text-align:center}.wt_viewer ~ .pre_view span{display:inline-block;width:155px;height:22px;margin-top:15px;background-position:0 -730px}.wt_viewer ~ .pre_view.end span{width:172px;background-position:0 -760px}</style>";
-		html += "</header>\n<body>\n<div class='wt_viewer'>\n";
-		html += bufferString;
-		html += "</div>\n</body>\n</html>";
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html>\n<header>\n");
+		sb.append("<style>\n.wt_viewer{min-width:960px;padding:50px 0;text-align:center;font-size:0;line-height:0}.wt_viewer img{display:block;margin:0 auto}.wt_viewer ~ .pre_view{display:block;width:270px;height:51px;margin:30px auto 0;border:1px solid #b8b8b8;text-align:center}.wt_viewer ~ .pre_view span{display:inline-block;width:155px;height:22px;margin-top:15px;background-position:0 -730px}.wt_viewer ~ .pre_view.end span{width:172px;background-position:0 -760px}</style>");
+		sb.append("</header>\n<body>\n<div class='wt_viewer'>\n");
+		sb.append(makeLinkButton(no));
+		sb.append(bufferString);
+		sb.append("</div>\n</body>\n</html>");
 		
-		String fileName = this.folderName + "\\" + no + ".html";
+		String fileName = makeHtmlFileName(no);
 		
-		return fileUtil.makeHtmlFile(fileName, html);
+		return fileUtil.makeHtmlFile(fileName, sb.toString());
+	}
+	
+	private String makeHtmlFileName(String no) {
+		return this.folderName + "\\" + no + ".html";
 	}
 	
 	//웹주소 절대경로를 local 상대경로 문자열로 변경 
@@ -128,5 +134,22 @@ public class Webtoon {
 	//이미지 폴더명 리턴
 	private String makeImageFolderName(String no) {
 		return this.folderName + "\\images\\" + no;
+	}
+	
+	private String makeLinkButton(String no) {
+		StringBuffer sb = new StringBuffer();
+		int curr = Integer.parseInt(no);
+		int last = Integer.parseInt(this.lastNo);
+		
+		if(curr == 1) {
+			sb.append("<a href = '" + makeHtmlFileName( String.valueOf(curr + 1)) + "'>다음화</a>");
+		}else if(curr >= last) {
+			sb.append("<a href = '" + makeHtmlFileName( String.valueOf(curr - 1)) + "'>이전화</a>");
+		}else {
+			sb.append("<a href = '" + makeHtmlFileName( String.valueOf(curr - 1)) + "'>이전화</a> | ");
+			sb.append("<a href = '" + makeHtmlFileName( String.valueOf(curr + 1)) + "'>다음화</a>");
+		}
+		
+		return sb.toString();
 	}
 }

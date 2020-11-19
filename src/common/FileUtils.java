@@ -57,11 +57,6 @@ public class FileUtils {
 			 
 			bos = new BufferedOutputStream(new FileOutputStream(f));
 			
-//			배열로 받으니 이미지가 깨짐....
-//			byte[] bufferData = new byte[1024]; 
-//			while(bis.read(bufferData, 0, bufferData.length) != -1) {
-//				bos.write(bufferData);
-//			}
 			int data = 0;
 			while((data = bis.read()) != -1) {
 				bos.write(data);
