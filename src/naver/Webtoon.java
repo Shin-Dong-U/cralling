@@ -147,12 +147,13 @@ public class Webtoon {
 		return this.folderName + "\\images\\" + no;
 	}
 	
+	//이전화 다음화 버튼 생성
 	private String makeLinkButton(String no) {
 		StringBuffer sb = new StringBuffer();
 		int curr = Integer.parseInt(no);
 		int last = Integer.parseInt(this.lastNo);
 		
-		sb.append("<div style='float:right;'>");
+		sb.append("<div style='min-width:960px;float:right;'>");
 		if(curr == 1) {
 			sb.append(" <a href = './" + (curr + 1) + ".html'>다음화</a> ");
 		}else if(curr >= last) {
