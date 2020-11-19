@@ -18,9 +18,12 @@ public class WebtoonAppLuncher extends Application{
     public void start(Stage primaryStage) throws IOException {
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("webtoon_crawller_fxml.fxml"));
     	Parent root = loader.load();
+    	
     	WebtoonController controller = loader.getController();
     	
     	Scene scene = new Scene(root);
+    	
+    	primaryStage.setTitle("웹툰 다운로더");
     	primaryStage.setScene(scene);
     	primaryStage.show();
     }
