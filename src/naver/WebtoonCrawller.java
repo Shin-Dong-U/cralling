@@ -10,7 +10,10 @@ public class WebtoonCrawller {
 	 * 3. 중지 
 	 */
 	public static void main(String[] args) throws IOException {
-		Webtoon crawlling = new Webtoon("현혹", "C:\\Users\\goott3\\Desktop\\sample");
-		crawlling.start();
+		Webtoon crawlling = new Webtoon("고수", "C:\\Users\\goott3\\Desktop\\sample");
+		long startTime = System.currentTimeMillis();
+		crawlling.start(0, 0);
+		long workTime = (System.currentTimeMillis() - startTime) / 1000;
+		System.out.println(workTime);
 	}
 }

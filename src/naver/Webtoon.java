@@ -39,10 +39,17 @@ public class Webtoon {
 		this.lastNo = this.getLastNo(this.LIST_STR + this.titleId);//해당 웹툰의 마지막 회차 
 	}
 	
-	public void start() throws IOException{
-		prepareSetting();			
+	public void start(int start, int end) throws IOException{
+		prepareSetting();
+		int last = Integer.parseInt(this.lastNo);
+
+		//예외처리
+		if(start < 1) start = 1;
+		else if(start > last) start = last;
+		if(end < start || end > last) end = last;
 		
-		for(int i = 1; i <= Integer.parseInt(this.lastNo); i++ ) {
+		
+		for(int i = start; i <= end; i++ ) {
 			try {
 				this.webtoonDownload(i + "");
 			} catch (IOException e) {
@@ -112,16 +119,20 @@ public class Webtoon {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<html>\n<header>\n");
 		sb.append("<style>\n.wt_viewer{min-width:960px;padding:50px 0;text-align:center;font-size:0;line-height:0}.wt_viewer img{display:block;margin:0 auto}.wt_viewer ~ .pre_view{display:block;width:270px;height:51px;margin:30px auto 0;border:1px solid #b8b8b8;text-align:center}.wt_viewer ~ .pre_view span{display:inline-block;width:155px;height:22px;margin-top:15px;background-position:0 -730px}.wt_viewer ~ .pre_view.end span{width:172px;background-position:0 -760px}</style>");
-		sb.append("</header>\n<body>\n<div class='wt_viewer'>\n");
+		sb.append("</header>\n<body>\n");
 		sb.append(makeLinkButton(no));
+		sb.append("<div class='wt_viewer'>\n");
 		sb.append(bufferString);
-		sb.append("</div>\n</body>\n</html>");
+		sb.append("</div>\n");
+		sb.append(makeLinkButton(no));
+		sb.append("</body>\n</html>");
 		
 		String fileName = makeHtmlFileName(no);
 		
 		return fileUtil.makeHtmlFile(fileName, sb.toString());
 	}
 	
+	//html 파일명 생성
 	private String makeHtmlFileName(String no) {
 		return this.folderName + "\\" + no + ".html";
 	}
@@ -141,14 +152,16 @@ public class Webtoon {
 		int curr = Integer.parseInt(no);
 		int last = Integer.parseInt(this.lastNo);
 		
+		sb.append("<div style='float:right;'>");
 		if(curr == 1) {
-			sb.append("<a href = '" + makeHtmlFileName( String.valueOf(curr + 1)) + "'>다음화</a>");
+			sb.append(" <a href = './" + (curr + 1) + ".html'>다음화</a> ");
 		}else if(curr >= last) {
-			sb.append("<a href = '" + makeHtmlFileName( String.valueOf(curr - 1)) + "'>이전화</a>");
+			sb.append(" <a href = './" + (curr - 1) + ".html'>이전화</a> ");
 		}else {
-			sb.append("<a href = '" + makeHtmlFileName( String.valueOf(curr - 1)) + "'>이전화</a> | ");
-			sb.append("<a href = '" + makeHtmlFileName( String.valueOf(curr + 1)) + "'>다음화</a>");
+			sb.append(" <a href = './" + (curr - 1) + ".html'>이전화</a> ");
+			sb.append(" <a href = './" + (curr + 1) + ".html'>다음화</a> ");
 		}
+		sb.append("</div>");
 		
 		return sb.toString();
 	}
