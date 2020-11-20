@@ -5,15 +5,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.HBox?>
 
-
-<HBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<HBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Pane prefHeight="200.0" prefWidth="200.0">
+      <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: gray; -fx-border-color: black;">
          <children>
-            <ProgressIndicator layoutX="74.0" layoutY="59.0" />
             <Label layoutX="68.0" layoutY="122.0" text="다운로드 중" />
 
             <Button fx:id="stop_btn" layoutX="80.0" layoutY="152.0" mnemonicParsing="false" text="중지" />
+            <ProgressIndicator layoutX="74.0" layoutY="56.0" />
          </children>
       </Pane>
    </children>

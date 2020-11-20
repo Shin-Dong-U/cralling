@@ -26,5 +26,4 @@ public class WebtoonAppLuncher extends Application{
     	primaryStage.setScene(scene);
     	primaryStage.show();
     }
-    
 }

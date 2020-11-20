@@ -6,15 +6,16 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import common.Utils;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import naver.Webtoon;
@@ -31,12 +32,15 @@ public class WebtoonController implements Initializable{
 	
 	private final String DEFAULT_FOLDER_NAME = "c:\\users\\" + System.getenv("USERNAME") + "\\desktop\\webtoon_download";
 	
-	private Thread demonT;
 	private Popup popup;
+	
+	public static boolean cancel = false;
 	
 	Stage primaryStage;//setter 주입식으로 바꿀가....?
 	
 	Utils util = new Utils();
+	
+	Task<Void> task;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -54,8 +58,6 @@ public class WebtoonController implements Initializable{
 				startBtnAction(event);
 			} catch (Exception e) { e.printStackTrace(); }
 		});
-		
-		
 	}
 	
 	//다운로드할 폴더명 설정
@@ -104,31 +106,53 @@ public class WebtoonController implements Initializable{
 		});
 		
 		popup.getContent().add(popbox);
-		popup.show(primaryStage);	
+		popup.show(primaryStage);
+		start_btn.setDisable(true);
 		
-		this.demonT = new Thread() {
+		task = new Task<Void>() {
 			@Override
-			public void run() {
+			protected Void call() throws Exception{
 				try {
+					start_btn.setDisable(true);
 					long startTime = System.currentTimeMillis();
 					crawlling.start(start, end);
 					long workTime = (System.currentTimeMillis() - startTime) / 1000;
 					System.out.println(workTime);
+					
 				}catch (IOException e) {
 					e.printStackTrace();
 				}
+				return null;
+			}
+			
+			@Override
+			protected void succeeded() { changeUI(); } 
+			
+			@Override
+			protected void cancelled() {
+				cancel = true; 
+				changeUI(); 
+				try {
+					Thread.currentThread().sleep(5000);
+					cancel = false;
+				} catch (InterruptedException e) { e.printStackTrace();}
+			}
+			
+			@Override
+			protected void failed() { changeUI(); }
+			
+			private void changeUI() {
+				popup.hide();
+				start_btn.setDisable(false);
 			}
 		};
 		
-		start_btn.setDisable(true);
-		demonT.setDaemon(true);
+		Thread demonT = new Thread(task);
 		demonT.start();
 	}
 	
+	//팝업의 중지 버튼 실행중이던 쓰레드를 중지시킨다.
 	public void stopBtnAction(ActionEvent event) throws Exception{
-		System.out.println("stop!!!!");
-		popup.hide();
-		demonT.stop();//더 좋은방법없나...?
-		start_btn.setDisable(false);
+		task.cancel();
 	}
 }

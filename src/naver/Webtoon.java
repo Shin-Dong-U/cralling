@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import common.FileUtils;
+import javafx.concurrent.Task;
 
 public class Webtoon {
 	
@@ -50,6 +51,7 @@ public class Webtoon {
 		
 		
 		for(int i = start; i <= end; i++ ) {
+			if(luncher.WebtoonController.cancel) return; //중도 취소 요청 시 종료 
 			try {
 				this.webtoonDownload(i + "");
 			} catch (IOException e) {
