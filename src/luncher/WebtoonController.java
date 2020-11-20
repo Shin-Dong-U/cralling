@@ -10,8 +10,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -27,9 +29,10 @@ public class WebtoonController implements Initializable{
 	@FXML private Button find_directory_btn;
 	@FXML private Button start_btn;
 	
-	@FXML private Button stop_btn;//popup.fxml
-	
 	private final String DEFAULT_FOLDER_NAME = "c:\\users\\" + System.getenv("USERNAME") + "\\desktop\\webtoon_download";
+	
+	private Thread demonT;
+	private Popup popup;
 	
 	Stage primaryStage;//setter 주입식으로 바꿀가....?
 	
@@ -51,6 +54,8 @@ public class WebtoonController implements Initializable{
 				startBtnAction(event);
 			} catch (Exception e) { e.printStackTrace(); }
 		});
+		
+		
 	}
 	
 	//다운로드할 폴더명 설정
@@ -71,12 +76,7 @@ public class WebtoonController implements Initializable{
     	}
     }
 	
-	/* Todo.
-	 * 1. 다운로드를 알리는 표시 
-	 * 2. 실행 중지 버튼 생성
-	 * 3. 다운로드중은 다른 조작 안되게 설정. 
-	 * 4. 데몬쓰레드로 구현
-	 */
+	//다운로드 시작
 	public void startBtnAction(ActionEvent event) throws Exception{
 		primaryStage = (Stage)start_btn.getScene().getWindow();
 		
@@ -91,12 +91,22 @@ public class WebtoonController implements Initializable{
 		
 		Webtoon crawlling = new Webtoon(webtoonName, folderName);
 		
+		popup = new Popup();//팝업
+		HBox popbox = (HBox)FXMLLoader.load(getClass().getResource("popup.fxml"));
 		
-		Popup popup = new Popup();
-		popup.getContent().add(FXMLLoader.load(getClass().getResource("popup.fxml")));
-		popup.show(primaryStage);
+		Button stopBtn = (Button)popbox.lookup("#stop_btn");//팝업 중지 버튼
+		stopBtn.setOnAction( e -> {
+			try {
+				stopBtnAction(e);
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
+		});
 		
-		Thread demonT = new Thread() {
+		popup.getContent().add(popbox);
+		popup.show(primaryStage);	
+		
+		this.demonT = new Thread() {
 			@Override
 			public void run() {
 				try {
@@ -104,15 +114,21 @@ public class WebtoonController implements Initializable{
 					crawlling.start(start, end);
 					long workTime = (System.currentTimeMillis() - startTime) / 1000;
 					System.out.println(workTime);
-				} catch (IOException e) {
+				}catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		};
 		
+		start_btn.setDisable(true);
 		demonT.setDaemon(true);
 		demonT.start();
-		//종료가 되면 신호를 받고 popup을 종료시키자!!!.
+	}
 	
+	public void stopBtnAction(ActionEvent event) throws Exception{
+		System.out.println("stop!!!!");
+		popup.hide();
+		demonT.stop();//더 좋은방법없나...?
+		start_btn.setDisable(false);
 	}
 }

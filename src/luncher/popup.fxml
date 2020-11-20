@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+
+
+<HBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <Pane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <ProgressIndicator layoutX="74.0" layoutY="59.0" />
+            <Label layoutX="68.0" layoutY="122.0" text="다운로드 중" />
+
+            <Button fx:id="stop_btn" layoutX="80.0" layoutY="152.0" mnemonicParsing="false" text="중지" />
+         </children>
+      </Pane>
+   </children>
+</HBox>
